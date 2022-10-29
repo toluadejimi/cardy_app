@@ -476,7 +476,7 @@ class CardController extends Controller
         $amount_to_fund = $request->amount_to_fund;
 
         $get_funding_fee = Charge::where('title', 'funding')
-        ->first->amount;
+        ->first()->amount;
 
 
         $rate = Charge::where('title', 'rate')
