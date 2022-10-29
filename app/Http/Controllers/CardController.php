@@ -211,6 +211,7 @@ class CardController extends Controller
         $card_amount = number_format($carddetails->balance / 100, 2, '.', '');
         $card_name = $carddetails->name_on_card;
         $city = $carddetails->city;
+        $card_status = $carddetails->card_status;
         $country = $carddetails->country;
         $street = $carddetails->street;
         $state = $carddetails->state;
@@ -227,6 +228,7 @@ class CardController extends Controller
 
         $card_data = [
 
+            'card_status' => $card_status,
             'card_type' => $card_type,
             'card_amount' => $card_amount,
             'card_no' => $usd_card_no_decrypt,
@@ -255,6 +257,7 @@ class CardController extends Controller
             'status' => $this->SuccessStatus,
             'card_data' => $card_data,
             'billing_data' => $billing_data,
+            'transactions' => $cardTransaction,
 
         ], 200);
 
