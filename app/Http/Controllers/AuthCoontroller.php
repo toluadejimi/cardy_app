@@ -488,11 +488,6 @@ class AuthCoontroller extends Controller
         $user_id = Auth::id();
 
 
-
-
-
-
-
         $result= User::where('id',$user_id)
         -> first();
 

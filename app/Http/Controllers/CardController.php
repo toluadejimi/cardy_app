@@ -158,6 +158,25 @@ class CardController extends Controller
             $update = Vcard::where('card_id', $id)
                 ->update([
                     'balance' => $var->data->balance,
+                    'city' => $var->data->billing_address->city,
+                    'country' => $var->data->billing_address->country,
+                    'street' => $var->data->billing_address->street,
+                    'postal_code' => $var->data->billing_address->postal_code,
+                    'state' => $var->data->billing_address->state,
+                    'card_status' => $var->data->status,
+                    'type' => $var->data->type,
+                    'card_id' => $var->data->id,
+                    'brand' => $var->data->brand,
+                    'status' => 1,
+                    'name_on_card' => $var->data->name_on_card,
+                    'balance' => $var->data->balance,
+                    'created_at' => $var->data->created_at,
+                    'card_number' => $var->data->card_number,
+                    'cvv' => $var->data->cvv,
+                    'expiry_month' => $var->data->expiry_month,
+                    'expiry_year' => $var->data->expiry_year,
+                    'last_four' => $var->data->last_four,
+                    'account_holder' => $var->data->account_holder
                 ]);
         } else {
 
@@ -189,7 +208,7 @@ class CardController extends Controller
         $carddetails = Vcard::where('card_id', $id)
             ->first();
 
-        $card_amount = $carddetails->balance / 100;
+        $card_amount = number_format($carddetails->balance / 100, 2, '.', '');
         $card_name = $carddetails->name_on_card;
         $city = $carddetails->city;
         $country = $carddetails->country;
