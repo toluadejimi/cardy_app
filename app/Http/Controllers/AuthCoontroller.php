@@ -31,7 +31,7 @@ class AuthCoontroller extends Controller
     public $failedStatus = false;
 
 
-    public function Login()
+    public function Login(Request $request)
     {
         try {
             //Login to account
@@ -55,11 +55,14 @@ class AuthCoontroller extends Controller
             if(Auth::user()->is_email_verified == 0){
 
 
+                $token = $request->bearerToken();
 
 
                 return response()->json([
                     'status' => $this->failedStatus,
                     'message' => 'Email Not Verified',
+                    'token' => $token,
+
                 ], 500);
 
             }
@@ -169,14 +172,21 @@ class AuthCoontroller extends Controller
         'password' => 'required|string|confirmed|max:255',
         ]);
         if($validator->fails()){
-            return response()->json(['status' => $this->failedStatus,$validator->errors()->toJson()], 400);
+            return response()->json([
+
+                'status' => $this->failedStatus,
+                'message'=> "Email has already been taken"
+
+            ], 400);
         }
         $user = User::create(array_merge(
                     $validator->validated(),
                     ['password' => Hash::make($request->password)],
                     ['pin' => Hash::make($request->pin)],
                     ['type' => 2],
-                    ['email_code' =>$email_code ],
+                    ['email_code' => $email_code ],
+                    ['device_id' => $request->device_id ],
+
 
 
                 ));
