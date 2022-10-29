@@ -257,7 +257,7 @@ class CardController extends Controller
             'status' => $this->SuccessStatus,
             'card_data' => $card_data,
             'billing_data' => $billing_data,
-            'transactions' => $cardTransaction,
+            'transactions' => $cardTransaction ?? null,
 
         ], 200);
 
