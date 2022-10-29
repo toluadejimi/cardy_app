@@ -84,6 +84,8 @@ Route::post('create-usd-card', [CardController::class, 'create_usd_card']);
 Route::post('fund-usd-card', [CardController::class, 'fund_usd_card']);
 Route::patch('freeze-usd-card', [CardController::class, 'freeze_usd_card']);
 Route::patch('unfreeze-usd-card', [CardController::class, 'unfreeze_usd_card']);
+Route::patch('liquidate-usd-card', [CardController::class, 'liquidate_usd_card']);
+
 
 
 
