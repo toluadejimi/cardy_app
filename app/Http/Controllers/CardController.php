@@ -103,7 +103,7 @@ class CardController extends Controller
 
         $var = json_decode($var);
 
-        $cardTransaction = $var->data;
+        $cardTransaction = $var->data ?? null;
 
         $message = $var->message;
 
