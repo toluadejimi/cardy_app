@@ -647,9 +647,7 @@ class CardController extends Controller
 
         $err_message = $var->message;
 
-
-
-        if($var->status == 'successful'){
+        if ($var->status == 'successful') {
 
             return response()->json([
 
@@ -657,7 +655,6 @@ class CardController extends Controller
                 'message' => "Card has been successfully freezed",
 
             ], 200);
-
 
         }
 
@@ -668,9 +665,7 @@ class CardController extends Controller
 
         ], 500);
 
-
     }
-
 
     public function unfreeze_usd_card(Request $request)
     {
@@ -709,9 +704,7 @@ class CardController extends Controller
 
         $err_message = $var->message;
 
-
-
-        if($var->status == 'successful'){
+        if ($var->status == 'successful') {
 
             return response()->json([
 
@@ -719,7 +712,6 @@ class CardController extends Controller
                 'message' => "Card has been successfully unfreezed",
 
             ], 200);
-
 
         }
 
@@ -730,6 +722,136 @@ class CardController extends Controller
 
         ], 500);
 
+    }
+
+    public function liquidate_usd_card(Request $request)
+    {
+
+        $get_rate = Charge::where('title', 'rate')->first();
+        $rate = $get_rate->amount;
+
+        $mono_api_key = env('MONO_KEY');
+
+        $id = Vcard::where('user_id', Auth::id())
+            ->first()->card_id;
+
+        $curl = curl_init();
+
+        curl_setopt($curl, CURLOPT_URL, " https://api.withmono.com/issuing/v1/cards/$id/liquidate");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 0);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt(
+            $curl,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Accept: application/json',
+                "mono-sec-key: $mono_api_key",
+            )
+        );
+        // $final_results = curl_exec($curl);
+
+        $var = curl_exec($curl);
+        curl_close($curl);
+
+        $var = json_decode($var);
+
+        $err_message = $var->message;
+
+        $transaction_id = $var->data->transaction_id;
+
+        if ($var->status == 'processing') {
+
+            $transaction = new Transaction();
+            $transaction->ref_trans_id = $transaction_id;
+            $transaction->user_id = Auth::id();
+            $transaction->transaction_type = "cash_in";
+            $transaction->debit = 0;
+            $transaction->note = "Liquidation of USD";
+            $transaction->save();
+
+            $mono_api_key = env('MONO_KEY');
+
+            $curl = curl_init();
+
+            curl_setopt($curl, CURLOPT_URL, "https://api.withmono.com/issuing/v1/transactions/$transaction_id");
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_ENCODING, '');
+            curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 0);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt(
+                $curl,
+                CURLOPT_HTTPHEADER,
+                array(
+                    'Content-Type: application/json',
+                    'Accept: application/json',
+                    "mono-sec-key: $mono_api_key",
+                )
+            );
+            // $final_results = curl_exec($curl);
+
+            $var = curl_exec($curl);
+            curl_close($curl);
+
+            $var = json_decode($var);
+
+            $amount = $var->data->amount;
+
+            $trx_id = $var->data->trx_id;
+
+            $get_amount_in_usd = $amount / 100;
+
+            $amount_in_naira = $get_amount_in_usd * $rate;
+
+            if ($var->status == 'successful') {
+
+                $user_amount = EMoney::where('user_id', Auth::id())
+                    ->first()->current_balance;
+
+                $credit = $user_amount + $amount_in_naira;
+
+                $update = EMoney::where('user_id', Auth::id())
+                    ->update([
+                        'current_balance' => $credit,
+                    ]);
+
+                $update_transaction = Transaction::where('ref_trans_id', $trx_id)
+                    ->update(['debit' => $amount_in_naira]);
+
+                return response()->json([
+
+                    'status' => $this->SuccessStatus,
+                    'message' => "USD Successfully Liquidated",
+
+                ], 200);
+
+            }
+
+            return response()->json([
+
+                'status' => $this->FailedStatus,
+                'message' => "Sorry!! Could not get transaction",
+
+            ], 200);
+
+        }
+
+        return response()->json([
+
+            'status' => $this->FailedStatus,
+            'message' => "Sorry!! $err_message",
+
+        ], 500);
 
     }
 
