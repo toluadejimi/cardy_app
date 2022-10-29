@@ -259,7 +259,7 @@ class CardController extends Controller
 
             'status' => $this->SuccessStatus,
             'card_data' => $card_data,
-            'billing_date' => $billing_data,
+            'billing_data' => $billing_data,
 
         ], 200);
 
@@ -268,6 +268,9 @@ class CardController extends Controller
     public function create_usd_card(Request $request)
     {
 
+
+        $fund_source = Charge::where('title', 'funding_wallet')
+        ->first()->amount;
 
         $amount_to_fund = $request->amount_to_fund;
 
@@ -280,10 +283,6 @@ class CardController extends Controller
 
         $user_amount = EMoney::where('user_id', Auth::id())
         ->first()->current_balance;
-
-
-
-
 
 
         $get_usd_card_records = Vcard::where('card_type', 'usd')
@@ -322,6 +321,7 @@ class CardController extends Controller
             $databody = array(
                 "account_holder" => Auth::user()->mono_customer_id,
                 "currency" => "usd",
+                "fund_source" => $fund_source,
                 "amount" => $mono_amount_to_fund_in_cent,
             );
 
@@ -464,5 +464,181 @@ class CardController extends Controller
         ],500);
 
     }
+
+    public function fund_usd_card(Request $request)
+    {
+
+
+        $fund_source = Charge::where('title', 'funding_wallet')
+        ->first()->amount;
+
+
+        $amount_to_fund = $request->amount_to_fund;
+
+        $get_funding_fee = Charge::where('title', 'funding')
+        ->first->amount;
+
+
+        $rate = Charge::where('title', 'rate')
+        ->first()->amount;
+
+
+        $funding_fee_in_naira = $get_funding_fee * $rate;
+
+        $get_amount_in_naira = (int)$amount_to_fund * (int)$rate;
+
+        $amount_in_naira =  (int)$get_amount_in_naira + (int)$funding_fee_in_naira;
+
+
+
+
+        $get_mono_amount_to_fund_in_cent = $amount_to_fund * 100;
+
+        $mono_amount_to_fund_in_cent = round($get_mono_amount_to_fund_in_cent, 2);
+
+        $users_id = Auth::id();
+
+
+
+        $card_id = Vcard::where('user_id', Auth::user()->id)
+            ->first()->card_id;
+
+        $id = $card_id;
+
+
+
+        $user_wallet_banlance = EMoney::where('user_id', Auth::user()->id)
+            ->first()->current_balance;
+
+
+        if ($amount_to_fund <= $user_wallet_banlance) {
+
+            if ($get_mono_amount_to_fund_in_cent >= 1000) {
+
+                //debit user for card funding
+                $debit = (int) $user_wallet_banlance - (int) $amount_in_naira;
+
+                $update = EMoney::where('user_id', Auth::id())
+                    ->update([
+                        'current_balance' => $debit,
+                    ]);
+
+                $transaction = new Transaction();
+                $transaction->ref_trans_id = Str::random(10);
+                $transaction->user_id = Auth::id();
+                $transaction->transaction_type = "cash_out";
+                $transaction->debit = $amount_in_naira;
+                $transaction->note = "Usd Card Funding";
+                $transaction->save();
+
+                $mono_api_key = env('MONO_KEY');
+
+                $databody = array(
+
+                    "amount" => $mono_amount_to_fund_in_cent,
+                    "fund_source" => $fund_source,
+                );
+
+                $body = json_encode($databody);
+                $curl = curl_init();
+
+                curl_setopt($curl, CURLOPT_URL, "https://api.withmono.com/issuing/v1/cards/$id/fund");
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_ENCODING, '');
+                curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+                curl_setopt($curl, CURLOPT_TIMEOUT, 0);
+                curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+                curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $body);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt(
+                    $curl,
+                    CURLOPT_HTTPHEADER,
+                    array(
+                        'Content-Type: application/json',
+                        'Accept: application/json',
+                        "mono-sec-key: $mono_api_key",
+                    )
+                );
+                // $final_results = curl_exec($curl);
+
+                $var = curl_exec($curl);
+                curl_close($curl);
+
+                $var = json_decode($var);
+
+                if ($var->status == 'failed') {
+
+                    $api_key = env('ELASTIC_API');
+                    $from = env('FROM_API');
+
+                    $err_message = $var->message;
+
+                    require_once "vendor/autoload.php";
+                    $client = new Client([
+                        'base_uri' => 'https://api.elasticemail.com',
+                    ]);
+
+                    $res = $client->request('GET', '/v2/email/send', [
+                        'query' => [
+
+                            'apikey' => "$api_key",
+                            'from' => "$from",
+                            'fromName' => 'Cardy',
+                            'sender' => "$from",
+                            'senderName' => 'Cardy',
+                            'subject' => 'Card Creation Error',
+                            'to' => 'toluadejimi@gmail.com',
+                            'bodyText' => "Error from Mono -  $err_message User Id - $users_id Amount - $amount_in_naira ",
+                            'encodingType' => 0,
+
+                        ],
+                    ]);
+
+                    $body = $res->getBody();
+                    $array_body = json_decode($body);
+
+                    return response()->json([
+
+                        'status' => $this->FailedStatus,
+                        'message' => 'Sorry!! Unable to fund card, Contact Support',
+
+                    ],500);
+                }
+
+
+
+                return response()->json([
+
+                    'status' => $this->SuccessStatus,
+                    'message' => "Card Funded with $amount_to_fund",
+
+                ],200);
+
+            }
+
+            return response()->json([
+
+                'status' => $this->FailedStatus,
+                'message' => 'Sorry!! Minimum Amount to fund is 10USD',
+
+            ],500);
+        }
+
+        return response()->json([
+
+            'status' => $this->FailedStatus,
+            'message' => 'Sorry!! Insufficient Funds, Fund your Wallet',
+
+        ],500);
+
+    }
+
+
+
+
+
+
 
 }
