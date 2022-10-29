@@ -55,7 +55,6 @@ class AuthCoontroller extends Controller
             if(Auth::user()->is_email_verified == 0){
 
 
-                $token = $request->bearerToken();
 
 
                 return response()->json([
