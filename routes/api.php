@@ -82,6 +82,8 @@ Route::post('verify-email', [AuthCoontroller::class, 'verify_email']);
 Route::get('get-card-details', [CardController::class, 'get_card_details']);
 Route::post('create-usd-card', [CardController::class, 'create_usd_card']);
 Route::post('fund-usd-card', [CardController::class, 'fund_usd_card']);
+Route::patch('freeze-usd-card', [CardController::class, 'freeze_usd_card']);
+
 
 
 

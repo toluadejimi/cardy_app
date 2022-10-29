@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Charge;
 use App\Models\EMoney;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Vcard;
-use App\Models\Transaction;
-use GuzzleHttp\Client;
-
-
-
 use App\Services\Encryption;
 use Auth;
+use GuzzleHttp\Client;
 //use Tymon\JwtAuth\Facades\JwtAuth;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -60,7 +57,7 @@ class CardController extends Controller
         $get_status = Vcard::where('user_id', Auth::id())
             ->first()->status;
 
-            $card_type = Vcard::where('user_id', Auth::id())
+        $card_type = Vcard::where('user_id', Auth::id())
             ->first()->card_type;
 
         if ($get_id == null) {
@@ -179,7 +176,7 @@ class CardController extends Controller
                     'expiry_month' => $var->data->expiry_month,
                     'expiry_year' => $var->data->expiry_year,
                     'last_four' => $var->data->last_four,
-                    'account_holder' => $var->data->account_holder
+                    'account_holder' => $var->data->account_holder,
                 ]);
         } else {
 
@@ -230,8 +227,6 @@ class CardController extends Controller
 
         $card_data = [
 
-
-
             'card_type' => $card_type,
             'card_amount' => $card_amount,
             'card_no' => $usd_card_no_decrypt,
@@ -268,46 +263,39 @@ class CardController extends Controller
     public function create_usd_card(Request $request)
     {
 
-
         $fund_source = Charge::where('title', 'funding_wallet')
-        ->first()->amount;
+            ->first()->amount;
 
         $amount_to_fund = $request->amount_to_fund;
-
-
-
 
         $get_mono_amount_to_fund_in_cent = $amount_to_fund * 100;
 
         $mono_amount_to_fund_in_cent = round($get_mono_amount_to_fund_in_cent, 2);
 
         $user_amount = EMoney::where('user_id', Auth::id())
-        ->first()->current_balance;
-
+            ->first()->current_balance;
 
         $get_usd_card_records = Vcard::where('card_type', 'usd')
             ->where('user_id', Auth::id())
             ->get() ?? null;
 
-        if ($amount_to_fund  > $user_amount) {
+        if ($amount_to_fund > $user_amount) {
             return response()->json([
 
                 'status' => $this->FailedStatus,
-                'message' => 'Error!! Insufficient Funds, Fund your Wallet'
+                'message' => 'Error!! Insufficient Funds, Fund your Wallet',
 
-            ],500);
+            ], 500);
         }
 
-        if ($mono_amount_to_fund_in_cent  < 1000) {
+        if ($mono_amount_to_fund_in_cent < 1000) {
             return response()->json([
 
                 'status' => $this->FailedStatus,
-                'message' => 'Error!! Minimum to fund is USD 10'
+                'message' => 'Error!! Minimum to fund is USD 10',
 
-            ],500);
+            ], 500);
         }
-
-
 
         $check_for_usd_virtual_card = Vcard::where('user_id', Auth::id())
             ->where('card_type', 'usd')
@@ -355,8 +343,6 @@ class CardController extends Controller
             curl_close($curl);
 
             $var = json_decode($var);
-
-
 
             if ($var->status == 'successful') {
 
@@ -415,7 +401,7 @@ class CardController extends Controller
                     'status' => $this->SuccessStatus,
                     'message' => 'Card creation is been processed',
 
-                ],200);
+                ], 200);
 
             } else {
 
@@ -452,7 +438,7 @@ class CardController extends Controller
                     'status' => $this->FailedStatus,
                     'message' => 'Opps!! Unable to fund card this time, Please Try again Later',
 
-                ],500);
+                ], 500);
             }
         }
 
@@ -461,36 +447,29 @@ class CardController extends Controller
             'status' => $this->FailedStatus,
             'message' => 'Sorry!! You can only have one USD Virtual Card',
 
-        ],500);
+        ], 500);
 
     }
 
     public function fund_usd_card(Request $request)
     {
 
-
         $fund_source = Charge::where('title', 'funding_wallet')
-        ->first()->amount;
-
+            ->first()->amount;
 
         $amount_to_fund = $request->amount_to_fund;
 
         $get_funding_fee = Charge::where('title', 'funding')
-        ->first()->amount;
-
+            ->first()->amount;
 
         $rate = Charge::where('title', 'rate')
-        ->first()->amount;
-
+            ->first()->amount;
 
         $funding_fee_in_naira = $get_funding_fee * $rate;
 
-        $get_amount_in_naira = (int)$amount_to_fund * (int)$rate;
+        $get_amount_in_naira = (int) $amount_to_fund * (int) $rate;
 
-        $amount_in_naira =  (int)$get_amount_in_naira + (int)$funding_fee_in_naira;
-
-
-
+        $amount_in_naira = (int) $get_amount_in_naira + (int) $funding_fee_in_naira;
 
         $get_mono_amount_to_fund_in_cent = $amount_to_fund * 100;
 
@@ -498,18 +477,13 @@ class CardController extends Controller
 
         $users_id = Auth::id();
 
-
-
         $card_id = Vcard::where('user_id', Auth::user()->id)
             ->first()->card_id;
 
         $id = $card_id;
 
-
-
         $user_wallet_banlance = EMoney::where('user_id', Auth::user()->id)
             ->first()->current_balance;
-
 
         if ($amount_to_fund <= $user_wallet_banlance) {
 
@@ -604,17 +578,15 @@ class CardController extends Controller
                         'status' => $this->FailedStatus,
                         'message' => 'Sorry!! Unable to fund card, Contact Support',
 
-                    ],500);
+                    ], 500);
                 }
-
-
 
                 return response()->json([
 
                     'status' => $this->SuccessStatus,
                     'message' => "Card Funded with $amount_to_fund",
 
-                ],200);
+                ], 200);
 
             }
 
@@ -623,7 +595,7 @@ class CardController extends Controller
                 'status' => $this->FailedStatus,
                 'message' => 'Sorry!! Minimum Amount to fund is 10USD',
 
-            ],500);
+            ], 500);
         }
 
         return response()->json([
@@ -631,14 +603,69 @@ class CardController extends Controller
             'status' => $this->FailedStatus,
             'message' => 'Sorry!! Insufficient Funds, Fund your Wallet',
 
-        ],500);
+        ], 500);
 
     }
 
+    public function freeze_usd_card(Request $request)
+    {
+
+        $mono_api_key = env('MONO_KEY');
+
+        $id = Vcard::where('user_id', Auth::id())
+            ->first()->card_id;
+
+        $curl = curl_init();
+
+        curl_setopt($curl, CURLOPT_URL, "https://api.withmono.com/issuing/v1/cards/$id/freeze");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 0);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt(
+            $curl,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Accept: application/json',
+                "mono-sec-key: $mono_api_key",
+            )
+        );
+        // $final_results = curl_exec($curl);
+
+        $var = curl_exec($curl);
+        curl_close($curl);
+
+        $var = json_decode($var);
+
+        $err_message = $var->message;
 
 
 
+        if($var->status == 'successful'){
+
+            return response()->json([
+
+                'status' => $this->SuccessStatus,
+                'message' => "Card has been successfully freezed",
+
+            ], 200);
 
 
+        }
+
+        return response()->json([
+
+            'status' => $this->FailedStatus,
+            'message' => "Sorry!! $err_message",
+
+        ], 500);
+
+
+    }
 
 }
