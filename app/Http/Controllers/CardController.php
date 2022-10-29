@@ -671,4 +671,66 @@ class CardController extends Controller
 
     }
 
+
+    public function unfreeze_usd_card(Request $request)
+    {
+
+        $mono_api_key = env('MONO_KEY');
+
+        $id = Vcard::where('user_id', Auth::id())
+            ->first()->card_id;
+
+        $curl = curl_init();
+
+        curl_setopt($curl, CURLOPT_URL, "https://api.withmono.com/issuing/v1/cards/$id/unfreeze");
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_ENCODING, '');
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 0);
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt(
+            $curl,
+            CURLOPT_HTTPHEADER,
+            array(
+                'Content-Type: application/json',
+                'Accept: application/json',
+                "mono-sec-key: $mono_api_key",
+            )
+        );
+        // $final_results = curl_exec($curl);
+
+        $var = curl_exec($curl);
+        curl_close($curl);
+
+        $var = json_decode($var);
+
+        $err_message = $var->message;
+
+
+
+        if($var->status == 'successful'){
+
+            return response()->json([
+
+                'status' => $this->SuccessStatus,
+                'message' => "Card has been successfully freezed",
+
+            ], 200);
+
+
+        }
+
+        return response()->json([
+
+            'status' => $this->FailedStatus,
+            'message' => "Sorry!! $err_message",
+
+        ], 500);
+
+
+    }
+
 }
