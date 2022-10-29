@@ -60,6 +60,9 @@ class CardController extends Controller
         $get_status = Vcard::where('user_id', Auth::id())
             ->first()->status;
 
+            $card_type = Vcard::where('user_id', Auth::id())
+            ->first()->card_type;
+
         if ($get_id == null) {
 
             return response()->json([
@@ -227,6 +230,9 @@ class CardController extends Controller
 
         $card_data = [
 
+
+
+            'card_type' => $card_type,
             'card_amount' => $card_amount,
             'card_no' => $usd_card_no_decrypt,
             'card_cvv' => $usd_card_cvv_decrypt,
