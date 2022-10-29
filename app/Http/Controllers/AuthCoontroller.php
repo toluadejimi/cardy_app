@@ -71,6 +71,7 @@ class AuthCoontroller extends Controller
                 return response()->json([
                     'status' => $this->failedStatus,
                     'message' => 'User Not Verified',
+                    'token' => $token,
                 ], 500);
 
             }
