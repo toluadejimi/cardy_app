@@ -716,7 +716,7 @@ class CardController extends Controller
             return response()->json([
 
                 'status' => $this->SuccessStatus,
-                'message' => "Card has been successfully freezed",
+                'message' => "Card has been successfully unfreezed",
 
             ], 200);
 
