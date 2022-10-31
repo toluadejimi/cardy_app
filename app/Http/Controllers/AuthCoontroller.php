@@ -111,9 +111,6 @@ class AuthCoontroller extends Controller
         ->first()->email_code;
 
 
-        dd($email_code);
-
-
 
         if($get_email_code == $email_code ){
 
