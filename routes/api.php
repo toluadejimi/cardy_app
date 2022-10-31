@@ -30,6 +30,16 @@ use App\Http\Controllers\CardController;
 |
 */
 
+
+
+
+Route::post('verify-email', [AuthCoontroller::class, 'verify_email']);
+
+
+
+
+
+
 Route::middleware('auth:sanctum', 'access')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -72,7 +82,6 @@ Route::post('kyc-verification', [AuthCoontroller::class, 'kyc_verification']);
 
 
 
-Route::post('verify-email', [AuthCoontroller::class, 'verify_email']);
 
 
 

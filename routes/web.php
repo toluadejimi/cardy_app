@@ -15,6 +15,8 @@ use App\Http\Controllers\ManageController;
 */
 //Clear Cache facade value:
 Route::get('/clear-cache', function() {
+
+  
     $exitCode = Artisan::call('cache:clear');
     return '<h1>Cache facade value cleared</h1>';
 });
@@ -66,33 +68,33 @@ Route::group(['middleware' => ['adminAuth']], function()
     Route::get('logout', [MainController::class,'logout']);
 
     Route::get('/dashboard', [MainController::class,'dashboard']);
-    
+
     //drop off
     Route::get('/drop-off', [MainController::class,'drop_offlist']);
     Route::delete('dropoffDelete/{id}', [MainController::class,'dropoffDelete']);
     Route::get('drop_off_details/{id}', [MainController::class,  'viewdropoff']);
 
-    
-    
+
+
     //agent request
     Route::get('/agent-request', [MainController::class,'agent_request']);
     Route::get('/agent_request_update/{id}', [MainController::class,'agent_request_update']);
-    
+
    //fund agent
    Route::get('/fund-agent', [MainController::class,'fund_agent']);
-   
-   
-   
-   
-   
+
+
+
+
+
    //transaction
     Route::get('/transactions', [MainController::class,'transactions']);
 
 
-    
-    
-    
-    
+
+
+
+
 
     Route::get('/users', [MainController::class,'users']);
     Route::get('/customers', [MainController::class,'customers']);
@@ -113,7 +115,7 @@ Route::group(['middleware' => ['adminAuth']], function()
     Route::delete('sortedDelete/{id}', [ManageController::class,'deleteSorting']);
     // Route::get('sortedEdit/{id}', [ManageController::class,'editSorting']);
     // Route::post('sortedEdit/{id}', [ManageController::class,'updateSorting']);
-    
+
     Route::get('/sortedtransfer', [MainController::class,'sortedTransferView']);
     Route::post('sorted_transfers', [MainController::class,'sortedTransfer']);
     Route::delete('sortedTransferDeleted/{id}', [ManageController::class,'sortedTransferDeleted']);
@@ -130,10 +132,10 @@ Route::group(['middleware' => ['adminAuth']], function()
     Route::post('createRole', [ManageController::class,'createRole']);
     Route::delete('roleDelete/{id}', [ManageController::class,'roleDelete']);
 
-    Route::get('/bailing', [MainController::class,'bailing']);    
+    Route::get('/bailing', [MainController::class,'bailing']);
     Route::post('bailed', [MainController::class,'bailed']);
 
-    Route::get('/addCollection', [MainController::class,'viewCollect']); 
+    Route::get('/addCollection', [MainController::class,'viewCollect']);
     Route::get('/collectioncenter', [MainController::class,'collectionCenter']);
     Route::post('collect', [MainController::class,'collect']);
     Route::get('collectionsDetails/{id}', [MainController::class,  'viewcollection']);
@@ -173,7 +175,7 @@ Route::group(['middleware' => ['adminAuth']], function()
     Route::delete('salesDelete/{id}', [ManageController::class,'deleteSales']);
 
     //filiter
-    
+
     Route::get('collectionFilter', [MainController::class,'collectionFilter']);
     Route::get('collection_report', [MainController::class,'collection_filter']);
 

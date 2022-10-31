@@ -101,17 +101,23 @@ class AuthCoontroller extends Controller
     public function verify_email(Request $request)
     {
 
-        $get_email_code = User::where('id', Auth::id())
-        ->first()->email_code;
 
-
-
+        $email = $request->email;
 
         $email_code = $request->email_code;
 
+
+        $get_email_code = User::where('email', $email)
+        ->first()->email_code;
+
+
+        dd($email_code);
+
+
+
         if($get_email_code == $email_code ){
 
-            $update = User::where('id', Auth::id())
+            $update = User::where('email', $email)
             ->update(['is_email_verified'=> '1' ]);
 
 
