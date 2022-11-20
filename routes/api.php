@@ -52,7 +52,7 @@ Route::post('login', [AuthCoontroller::class, 'login']);
 
 Route::get('all-state', [AuthCoontroller::class, 'get_states']);
 
-Route::get('get-lga', [AuthCoontroller::class, 'get_lga']);
+Route::post('get-lga', [AuthCoontroller::class, 'get_lga']);
 
 Route::get('get-fees', [AuthCoontroller::class, 'get_fees']);
 
