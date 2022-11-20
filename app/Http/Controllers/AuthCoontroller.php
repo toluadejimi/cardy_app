@@ -374,6 +374,30 @@ class AuthCoontroller extends Controller
             $last_name = Auth::user()->l_name;
             $phone = Auth::user()->phone;
 
+            $identification_type = $request->identification_type;
+            $identification_number = $request->identification_number;
+            $identification_url = $request->identification_url;
+            $get_dob = $request->dob;
+            $dob = date("d-m-Y", strtotime($get_dob));
+
+
+            
+
+
+
+            if($request->file('identification_url')){
+
+                $file= $request->file('identification_url');
+                $filename= date('YmdHi').$file->getClientOriginalName();
+                $file-> move(public_path('/upload/verify'), $filename);
+
+                $mono_file_url = url('')."/upload/verify/$filename";
+
+            }
+
+
+
+
             $input = $request->validate([
                 'address_line1' => ['required', 'string'],
                 'city' => ['required', 'string'],
@@ -397,6 +421,17 @@ class AuthCoontroller extends Controller
                     "state" => $state,
                     "lga" => $lga,
                 ),
+
+                "identity" => array(
+                    "type" => "$identification_type",
+                    "number" => "$identification_number",
+                    "url" => "$mono_file_url",
+                ),
+
+                "dob" => array(
+                    "date" => "$dob"
+                ),
+
 
                 "entity" => "INDIVIDUAL",
                 "first_name" => $first_name,
@@ -447,15 +482,20 @@ class AuthCoontroller extends Controller
                 User::where('id', Auth::user()->id)
                     ->update([
                         'address_line1' => $request->address_line1,
-                        'city' => $request->city,
-                        'f_name' => $request->f_name,
-                        'l_name' => $request->l_name,
-                        'm_name' => $request->m_name,
-                        'state' => $request->state,
-                        'lga' => $request->lga,
-                        'bvn' => $request->bvn,
-                        'mono_customer_id' => $var->data->id,
-                        'is_kyc_verified' => 1,
+                    'city' => $request->city,
+                    'f_name' => $request->f_name,
+                    'l_name' => $request->l_name,
+                    'm_name' => $request->m_name,
+                    'identification_type' => $identification_type,
+                    'identification_number' => $identification_number,
+                    'identification_url' => $identification_url,
+                    'state' => $request->state,
+                    'lga' => $request->lga,
+                    'bvn' => $request->bvn,
+                    'mono_customer_id' => $var->data->id,
+                    'is_kyc_verified' => 1,
+                    'identity' => 1,
+                    'dob' => $dob,
 
                     ]);
 
@@ -497,7 +537,7 @@ class AuthCoontroller extends Controller
             $token = $request->bearerToken();
 
             return response()->json([
-                'ststus' => $this->successStatus,
+                'status' => $this->successStatus,
                 'user' =>$result,
                 'wallet'=>$wallet,
                 'token' => $token,
@@ -516,7 +556,7 @@ class AuthCoontroller extends Controller
 
 
             return response()->json([
-                'ststus' => $this->successStatus,
+                'status' => $this->successStatus,
                 'data' =>$all_states,
 
             ]);
@@ -533,7 +573,7 @@ class AuthCoontroller extends Controller
 
 
             return response()->json([
-                'ststus' => $this->successStatus,
+                'status' => $this->successStatus,
                 'data' =>$lga,
 
             ]);
