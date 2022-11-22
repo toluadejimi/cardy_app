@@ -381,7 +381,7 @@ class AuthCoontroller extends Controller
             $dob = date("d-m-Y", strtotime($get_dob));
 
 
-            
+
 
 
 
@@ -488,7 +488,7 @@ class AuthCoontroller extends Controller
                     'm_name' => $request->m_name,
                     'identification_type' => $identification_type,
                     'identification_number' => $identification_number,
-                    'identification_url' => $identification_url,
+                    'identification_url' => $mono_file_url,
                     'state' => $request->state,
                     'lga' => $request->lga,
                     'bvn' => $request->bvn,
