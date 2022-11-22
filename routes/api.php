@@ -16,8 +16,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SortedTransferController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\CardController;
-
-
+use App\Models\Transaction;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +33,9 @@ use App\Http\Controllers\CardController;
 
 
 Route::post('verify-email', [AuthCoontroller::class, 'verify_email']);
+
+
+
 
 
 
@@ -86,6 +88,7 @@ Route::post('kyc-verification', [AuthCoontroller::class, 'kyc_verification']);
 
 
 
+
 //cards
 
 Route::get('get-card-details', [CardController::class, 'get_card_details']);
@@ -95,6 +98,11 @@ Route::patch('freeze-usd-card', [CardController::class, 'freeze_usd_card']);
 Route::patch('unfreeze-usd-card', [CardController::class, 'unfreeze_usd_card']);
 Route::patch('liquidate-usd-card', [CardController::class, 'liquidate_usd_card']);
 
+
+//transactions
+Route::get('fund-transactions', [TransactionController::class, 'get_fund_transactions']);
+Route::post('bank-transfer', [TransactionController::class, 'bank_transaction']);
+Route::post('instant-fund', [TransactionController::class, 'instant_funding']);
 
 
 
