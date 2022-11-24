@@ -508,4 +508,21 @@ class TransactionController extends Controller
 
     }
 
+
+    public function transactions(Request $request){
+
+        $user_id = Auth::id();
+
+        $transactions = Transaction::where('user_id', $user_id)
+        ->get();
+
+        return response()->json([
+
+            'status' => $this->SuccessStatus,
+            'data' => $transactions
+
+        ], 200);
+
+    }
+
 }
