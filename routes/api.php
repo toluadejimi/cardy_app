@@ -104,7 +104,7 @@ Route::get('fund-transactions', [TransactionController::class, 'get_fund_transac
 Route::post('bank-transfer', [TransactionController::class, 'bank_transaction']);
 Route::post('instant-fund', [TransactionController::class, 'instant_funding']);
 
-Route::post('get-all-transactions', [TransactionController::class, 'transactions']);
+Route::get('get-all-transactions', [TransactionController::class, 'transactions']);
 
 
 
