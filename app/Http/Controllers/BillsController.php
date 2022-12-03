@@ -27,6 +27,8 @@ class BillsController extends Controller
     //
     public $successStatus = true;
     public $failedStatus = false;
+    public $auth = 'dG9sdWFkZWppbWlAZ21haWwuY29tOlRvbHVsb3BlMjU4MEA';
+
 
 
     public function buy_airtime_for_self(Request $request)
@@ -35,7 +37,7 @@ class BillsController extends Controller
         $api_key = env('ELASTIC_API');
         $from = env('FROM_API');
 
-        $auth = env('VTAUTH');
+        $auth = $this->auth;
 
         $request_id = date('YmdHis') . Str::random(4);
 
