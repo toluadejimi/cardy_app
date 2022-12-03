@@ -580,9 +580,9 @@ class BillsController extends Controller
 
 
 
-        if($billersCode == 'gotv'){
+        if($serviceID == 'gotv'){
 
-            
+
             $curl = curl_init();
             curl_setopt_array($curl, array(
                 CURLOPT_URL => 'https://vtpass.com/api/merchant-verify',
