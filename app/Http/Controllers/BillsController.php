@@ -27,7 +27,7 @@ class BillsController extends Controller
     //
     public $successStatus = true;
     public $failedStatus = false;
-    public $auth = 'dG9sdWFkZWppbWlAZ21haWwuY29tOlRvbHVsb3BlMjU4MEA';
+    public $auth = "dG9sdWFkZWppbWlAZ21haWwuY29tOlRvbHVsb3BlMjU4MEA";
 
 
 
@@ -38,6 +38,9 @@ class BillsController extends Controller
         $from = env('FROM_API');
 
         $auth = $this->auth;
+
+        dd($auth);
+
 
         $request_id = date('YmdHis') . Str::random(4);
 
@@ -113,7 +116,6 @@ class BillsController extends Controller
 
         $var = json_decode($var);
 
-        dd($var , $auth );
 
         $trx_id = $var->requestId;
 
