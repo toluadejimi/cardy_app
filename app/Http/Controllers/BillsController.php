@@ -39,7 +39,6 @@ class BillsController extends Controller
 
         $auth = $this->auth;
 
-        dd($auth);
 
 
         $request_id = date('YmdHis') . Str::random(4);
