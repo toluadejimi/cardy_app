@@ -91,6 +91,9 @@ Route::get('data-type', [BillsController::class, 'data_type']);
 Route::post('buy-data', [BillsController::class, 'buy_data']);
 Route::post('validate', [BillsController::class, 'verify']);
 Route::post('buy-token', [BillsController::class, 'buy_token']);
+Route::get('token-company', [BillsController::class, 'get_token_company']);
+
+
 
 
 

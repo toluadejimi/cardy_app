@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Mail;
-
+use PhpParser\Node\Expr\AssignOp\Pow;
 
 class BillsController extends Controller
 {
@@ -641,6 +641,21 @@ class BillsController extends Controller
 
         }
 
+    }
+
+    public function get_token_company(){
+
+    $token_company = Power::all();
+
+    return response()->json([
+
+        'status' => $this->successStatus,
+        'data' => $token_company,
+
+    ],200);
+
+
+    
     }
 
 
