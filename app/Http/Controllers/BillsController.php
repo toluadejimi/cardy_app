@@ -525,6 +525,8 @@ class BillsController extends Controller
                 'base_uri' => 'https://api.elasticemail.com',
             ]);
 
+            $phone = $biller_code;
+
             $res = $client->request('GET', '/v2/email/send', [
                 'query' => [
 
