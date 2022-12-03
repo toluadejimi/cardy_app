@@ -570,11 +570,65 @@ class BillsController extends Controller
     {
 
 
+
+
         $auth = $this->auth;
 
         $billersCode = $request->billers_code;
         $serviceID = $request->service_id;
         $type = $request->type;
+
+
+
+        if($billersCode == 'gotv'){
+
+            
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://vtpass.com/api/merchant-verify',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'billersCode' => $billers_code,
+                    'serviceID' => $service_id,
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    "Authorization: Basic $auth=",
+                    'Cookie: laravel_session=eyJpdiI6IlBkTGc5emRPMmhyQVwvb096YkVKV2RnPT0iLCJ2YWx1ZSI6IkNvSytPVTV5TW52K2tBRlp1R2pqaUpnRDk5YnFRbEhuTHhaNktFcnBhMFRHTlNzRWIrejJxT05kM1wvM1hEYktPT2JKT2dJWHQzdFVaYnZrRytwZ2NmQT09IiwibWFjIjoiZWM5ZjI3NzBmZTBmOTZmZDg3ZTUxMDBjODYxMzQ3OTkxN2M4YTAxNjNmMWY2YjAxZTIzNmNmNWNhOWExNzJmOCJ9',
+                ),
+            ));
+
+            $var = curl_exec($curl);
+            curl_close($curl);
+
+            $var = json_decode($var);
+
+            if ($var->code == 000) {
+
+                $customer_name = $var->content->Customer_Name;
+                $plan = $var->content->Current_Bouquet;
+
+                $update = User::where('id', Auth::id())
+                    ->update([
+                        'gotv_number' => $billers_code,
+                        'current_gotv_plan' => $plan,
+                    ]);
+
+                    return response()->json([
+
+                        'status' => $this->successStatus,
+                        'data' => "$customer_name",
+                        'plan' => "$plan"
+
+                    ],200);
+
+
+        }
 
         $curl = curl_init();
 
@@ -655,7 +709,7 @@ class BillsController extends Controller
     ],200);
 
 
-    
+
     }
 
 
