@@ -88,6 +88,11 @@ Route::post('kyc-verification', [AuthCoontroller::class, 'kyc_verification']);
 Route::post('buy-airtime-for-self', [BillsController::class, 'buy_airtime_for_self']);
 Route::post('buy-airtime-for-others', [BillsController::class, 'buy_airtime_for_others']);
 Route::get('data-type', [BillsController::class, 'data_type']);
+Route::post('buy-data', [BillsController::class, 'buy_data']);
+Route::post('validate', [BillsController::class, 'validate']);
+Route::post('buy-token', [BillsController::class, 'buy_token']);
+
+
 
 
 
