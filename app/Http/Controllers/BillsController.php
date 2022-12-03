@@ -566,5 +566,84 @@ class BillsController extends Controller
 
 
 
+    public function verify(Request $request)
+    {
+
+
+        $auth = $this->auth;
+
+        $billersCode = $request->billers_code;
+        $serviceID = $request->service_id;
+        $type = $request->type;
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://vtpass.com/api/merchant-verify',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'billersCode' => $billersCode,
+                'serviceID' => $serviceID,
+                'type' => $type,
+            ),
+            CURLOPT_HTTPHEADER => array(
+                "Authorization: Basic $auth=",
+                'Cookie: laravel_session=eyJpdiI6IlBkTGc5emRPMmhyQVwvb096YkVKV2RnPT0iLCJ2YWx1ZSI6IkNvSytPVTV5TW52K2tBRlp1R2pqaUpnRDk5YnFRbEhuTHhaNktFcnBhMFRHTlNzRWIrejJxT05kM1wvM1hEYktPT2JKT2dJWHQzdFVaYnZrRytwZ2NmQT09IiwibWFjIjoiZWM5ZjI3NzBmZTBmOTZmZDg3ZTUxMDBjODYxMzQ3OTkxN2M4YTAxNjNmMWY2YjAxZTIzNmNmNWNhOWExNzJmOCJ9',
+            ),
+        ));
+
+        $var = curl_exec($curl);
+        curl_close($curl);
+
+        $var = json_decode($var);
+
+        $status = $var->content->WrongBillersCode;
+
+        if ($status == true) {
+
+            return response()->json([
+
+                'status' => $this->failedStatus,
+                'message' => "Please check the Meter No and try again"
+
+            ],500);
+
+        }
+
+        if ($var->code == 000) {
+
+            $customer_name = $var->content->Customer_Name;
+            $eletric_address = $var->content->Address;
+            $meter_no = $var->content->Meter_Number;
+
+            $update = User::where('id', Auth::id())
+                ->update([
+                    'meter_number' => $meter_no,
+                    'eletric_company' => $serviceID,
+                    'eletric_type' => $type,
+                    'eletric_address' => $eletric_address,
+
+                ]);
+
+                return response()->json([
+
+                    'status' => $this->successStatus,
+                    'data' => "$customer_name"
+
+                ],200);
+
+
+        }
+
+    }
+
+
+
 
 }
