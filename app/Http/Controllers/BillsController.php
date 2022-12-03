@@ -2,25 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Traits\HistoryTrait;
-use App\Models\Bank;
-use App\Models\BankTransfer;
-use App\Models\Charge;
-use App\Models\DataType;
 use App\Models\EMoney;
 use App\Models\Power;
 use App\Models\Transaction;
 use App\Models\User;
-use App\Services\Encryption;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use App\Mail\UsdCardEmail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Mail;
-use PhpParser\Node\Expr\AssignOp\Pow;
 
 class BillsController extends Controller
 {
@@ -29,8 +19,6 @@ class BillsController extends Controller
     public $failedStatus = false;
     public $auth = "dG9sdWFkZWppbWlAZ21haWwuY29tOlRvbHVsb3BlMjU4MEA";
 
-
-
     public function buy_airtime_for_self(Request $request)
     {
 
@@ -38,8 +26,6 @@ class BillsController extends Controller
         $from = env('FROM_API');
 
         $auth = $this->auth;
-
-
 
         $request_id = date('YmdHis') . Str::random(4);
 
@@ -60,8 +46,8 @@ class BillsController extends Controller
         if (Hash::check($transfer_pin, $user_pin) == false) {
             return response()->json([
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Invalid Pin"
-            ],500);
+                'message' => "Failed!! Invalid Pin",
+            ], 500);
 
         }
 
@@ -69,10 +55,9 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Amount must not be less than NGN 100"
+                'message' => "Failed!! Amount must not be less than NGN 100",
 
-
-            ],500);
+            ], 500);
         }
 
         if ($amount > $user_wallet_banlance) {
@@ -80,10 +65,9 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Insufficient Funds, Fund your wallet"
+                'message' => "Failed!! Insufficient Funds, Fund your wallet",
 
-
-            ],500);
+            ], 500);
 
         }
 
@@ -114,7 +98,6 @@ class BillsController extends Controller
         curl_close($curl);
 
         $var = json_decode($var);
-
 
         $trx_id = $var->requestId;
 
@@ -170,19 +153,16 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->successStatus,
-                'message' => 'Airtime Purchase Successful'
+                'message' => 'Airtime Purchase Successful',
 
+            ], 200);
 
-            ],200);
-
-
-        } return response()->json([
+        }return response()->json([
 
             'status' => $this->failedStatus,
-            'message' => "Failed!! Please try again later"
+            'message' => "Failed!! Please try again later",
 
-
-        ],500);
+        ], 500);
 
     }
 
@@ -193,8 +173,6 @@ class BillsController extends Controller
         $from = env('FROM_API');
 
         $auth = $this->auth;
-
-
 
         $request_id = date('YmdHis') . Str::random(4);
 
@@ -215,8 +193,8 @@ class BillsController extends Controller
         if (Hash::check($transfer_pin, $user_pin) == false) {
             return response()->json([
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Invalid Pin"
-            ],500);
+                'message' => "Failed!! Invalid Pin",
+            ], 500);
 
         }
 
@@ -224,10 +202,9 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Amount must not be less than NGN 100"
+                'message' => "Failed!! Amount must not be less than NGN 100",
 
-
-            ],500);
+            ], 500);
         }
 
         if ($amount > $user_wallet_banlance) {
@@ -235,10 +212,9 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Insufficient Funds, Fund your wallet"
+                'message' => "Failed!! Insufficient Funds, Fund your wallet",
 
-
-            ],500);
+            ], 500);
 
         }
 
@@ -269,7 +245,6 @@ class BillsController extends Controller
         curl_close($curl);
 
         $var = json_decode($var);
-
 
         $trx_id = $var->requestId;
 
@@ -325,25 +300,21 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->successStatus,
-                'message' => 'Airtime Purchase Successful'
+                'message' => 'Airtime Purchase Successful',
 
+            ], 200);
 
-            ],200);
-
-
-        } return response()->json([
+        }return response()->json([
 
             'status' => $this->failedStatus,
-            'message' => "Failed!! Please try again later"
+            'message' => "Failed!! Please try again later",
 
-
-        ],500);
+        ], 500);
 
     }
 
-
-    public function data_type(){
-
+    public function data_type()
+    {
 
         $client = new \GuzzleHttp\Client();
         $request = $client->get('https://vtpass.com/api/service-variations?serviceID=mtn-data');
@@ -381,7 +352,6 @@ class BillsController extends Controller
         $result = json_decode($response);
         $get_spectranet_network = $result->content->variations;
 
-
         return response()->json([
 
             'status' => $this->successStatus,
@@ -389,17 +359,12 @@ class BillsController extends Controller
             'glo_data' => $get_glo_network,
             'airtel_data' => $get_airtel_network,
             '9mobile_data' => $get_9mobile_network,
-            'smile_data' =>  $get_smile_network,
+            'smile_data' => $get_smile_network,
             'spectranet_data' => $get_spectranet_network,
 
-        ],200);
-
-
-
-
+        ], 200);
 
     }
-
 
     public function buy_data(Request $request)
     {
@@ -434,8 +399,8 @@ class BillsController extends Controller
         if (Hash::check($transfer_pin, $user_pin) == false) {
             return response()->json([
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Invalid Pin"
-            ],500);
+                'message' => "Failed!! Invalid Pin",
+            ], 500);
 
         }
 
@@ -443,10 +408,9 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Amount must not be less than NGN 100"
+                'message' => "Failed!! Amount must not be less than NGN 100",
 
-
-            ],500);
+            ], 500);
         }
 
         if ($amount > $user_wallet_banlance) {
@@ -454,13 +418,11 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->failedStatus,
-                'message' => "Failed!! Insufficient Funds, Fund your wallet"
+                'message' => "Failed!! Insufficient Funds, Fund your wallet",
 
-
-            ],500);
+            ], 500);
 
         }
-
 
         $curl = curl_init();
 
@@ -491,7 +453,6 @@ class BillsController extends Controller
         curl_close($curl);
 
         $var = json_decode($var);
-
 
         $trx_id = $var->requestId;
 
@@ -549,28 +510,20 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->successStatus,
-                'message' => 'Data Purchase Successful'
+                'message' => 'Data Purchase Successful',
 
+            ], 200);
 
-            ],200);
-
-
-        } return response()->json([
+        }return response()->json([
 
             'status' => $this->failedStatus,
-            'message' => "Failed!! Please try again later"
+            'message' => "Failed!! Please try again later",
 
-
-        ],500);
+        ], 500);
     }
-
-
 
     public function verify(Request $request)
     {
-
-
-
 
         $auth = $this->auth;
 
@@ -578,10 +531,7 @@ class BillsController extends Controller
         $serviceID = $request->service_id;
         $type = $request->type;
 
-
-
-        if($serviceID == 'gotv'){
-
+        if ($serviceID == 'gotv') {
 
             $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -619,15 +569,113 @@ class BillsController extends Controller
                         'current_gotv_plan' => $plan,
                     ]);
 
-                    return response()->json([
+                return response()->json([
 
-                        'status' => $this->successStatus,
-                        'data' => "$customer_name",
-                        'plan' => "$plan"
+                    'status' => $this->successStatus,
+                    'data' => "$customer_name",
+                    'plan' => "$plan",
 
-                    ],200);
+                ], 200);
 
+            }
+        }
 
+        if ($serviceID == 'startimes') {
+
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://vtpass.com/api/merchant-verify',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'billersCode' => $billersCode,
+                    'serviceID' => $serviceID,
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    "Authorization: Basic $auth=",
+                    'Cookie: laravel_session=eyJpdiI6IlBkTGc5emRPMmhyQVwvb096YkVKV2RnPT0iLCJ2YWx1ZSI6IkNvSytPVTV5TW52K2tBRlp1R2pqaUpnRDk5YnFRbEhuTHhaNktFcnBhMFRHTlNzRWIrejJxT05kM1wvM1hEYktPT2JKT2dJWHQzdFVaYnZrRytwZ2NmQT09IiwibWFjIjoiZWM5ZjI3NzBmZTBmOTZmZDg3ZTUxMDBjODYxMzQ3OTkxN2M4YTAxNjNmMWY2YjAxZTIzNmNmNWNhOWExNzJmOCJ9',
+                ),
+            ));
+
+            $var = curl_exec($curl);
+            curl_close($curl);
+
+            $var = json_decode($var);
+
+            if ($var->code == 000) {
+
+                $customer_name = $var->content->Customer_Name;
+                $plan = $var->content->Current_Bouquet;
+
+                $update = User::where('id', Auth::id())
+                    ->update([
+                        'gotv_number' => $billersCode,
+                        'current_gotv_plan' => $plan,
+                    ]);
+
+                return response()->json([
+
+                    'status' => $this->successStatus,
+                    'data' => "$customer_name",
+                    'plan' => "$plan",
+
+                ], 200);
+
+            }
+        }
+
+        if ($serviceID == 'dstv') {
+
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://vtpass.com/api/merchant-verify',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => array(
+                    'billersCode' => $billersCode,
+                    'serviceID' => $serviceID,
+                ),
+                CURLOPT_HTTPHEADER => array(
+                    "Authorization: Basic $auth=",
+                    'Cookie: laravel_session=eyJpdiI6IlBkTGc5emRPMmhyQVwvb096YkVKV2RnPT0iLCJ2YWx1ZSI6IkNvSytPVTV5TW52K2tBRlp1R2pqaUpnRDk5YnFRbEhuTHhaNktFcnBhMFRHTlNzRWIrejJxT05kM1wvM1hEYktPT2JKT2dJWHQzdFVaYnZrRytwZ2NmQT09IiwibWFjIjoiZWM5ZjI3NzBmZTBmOTZmZDg3ZTUxMDBjODYxMzQ3OTkxN2M4YTAxNjNmMWY2YjAxZTIzNmNmNWNhOWExNzJmOCJ9',
+                ),
+            ));
+
+            $var = curl_exec($curl);
+            curl_close($curl);
+
+            $var = json_decode($var);
+
+            if ($var->code == 000) {
+
+                $customer_name = $var->content->Customer_Name;
+                $plan = $var->content->Current_Bouquet;
+
+                $update = User::where('id', Auth::id())
+                    ->update([
+                        'gotv_number' => $billersCode,
+                        'current_gotv_plan' => $plan,
+                    ]);
+
+                return response()->json([
+
+                    'status' => $this->successStatus,
+                    'data' => "$customer_name",
+                    'plan' => "$plan",
+
+                ], 200);
+
+            }
         }
 
         $curl = curl_init();
@@ -664,9 +712,9 @@ class BillsController extends Controller
             return response()->json([
 
                 'status' => $this->failedStatus,
-                'message' => "Please check the Meter No and try again"
+                'message' => "Please check the Meter No and try again",
 
-            ],500);
+            ], 500);
 
         }
 
@@ -685,34 +733,29 @@ class BillsController extends Controller
 
                 ]);
 
-                return response()->json([
+            return response()->json([
 
-                    'status' => $this->successStatus,
-                    'data' => "$customer_name"
+                'status' => $this->successStatus,
+                'data' => "$customer_name",
 
-                ],200);
+            ], 200);
 
-            }
         }
 
     }
 
-    public function get_token_company(){
+    public function get_token_company()
+    {
 
-    $token_company = Power::all();
+        $token_company = Power::all();
 
-    return response()->json([
+        return response()->json([
 
-        'status' => $this->successStatus,
-        'data' => $token_company,
+            'status' => $this->successStatus,
+            'data' => $token_company,
 
-    ],200);
-
-
+        ], 200);
 
     }
-
-
-
 
 }
