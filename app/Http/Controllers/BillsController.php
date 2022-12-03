@@ -20,7 +20,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Mail;
-use Session;
 
 
 class BillsController extends Controller
@@ -33,6 +32,7 @@ class BillsController extends Controller
     public function buy_airtime_for_self(Request $request)
     {
 
+        dd('hello');
         $api_key = env('ELASTIC_API');
         $from = env('FROM_API');
 
