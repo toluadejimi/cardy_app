@@ -15,6 +15,7 @@ use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\SortedTransferController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\BillsController;
 use App\Http\Controllers\CardController;
 use App\Models\Transaction;
 
@@ -81,6 +82,12 @@ Route::post('deviceId', [AuthCoontroller::class, 'deviceId']);
 
 Route::post('get-user', [AuthCoontroller::class, 'get_user']);
 Route::post('kyc-verification', [AuthCoontroller::class, 'kyc_verification']);
+
+
+//BIlls
+Route::post('buy-airtime-for-self', [BillsController::class, 'buy_airtime_for_self']);
+Route::post('buy-airtime-for-others', [BillsController::class, 'buy_airtime_for_others']);
+
 
 
 
