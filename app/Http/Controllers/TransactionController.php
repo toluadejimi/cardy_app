@@ -391,10 +391,15 @@ class TransactionController extends Controller
         $transaction->type = 'Bank Transfer';
         $transaction->save();
 
+
+        $bank = Bank::all();
+
+
         return response()->json([
 
             'status' => $this->SuccessStatus,
             'data' => $transaction,
+            'bank' => $bank
 
         ], 200);
 
