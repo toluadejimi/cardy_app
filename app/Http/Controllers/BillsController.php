@@ -594,8 +594,8 @@ class BillsController extends Controller
                 CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_POSTFIELDS => array(
-                    'billersCode' => $billers_code,
-                    'serviceID' => $service_id,
+                    'billersCode' => $billersCode,
+                    'serviceID' => $serviceID,
                 ),
                 CURLOPT_HTTPHEADER => array(
                     "Authorization: Basic $auth=",
