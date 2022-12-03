@@ -192,7 +192,9 @@ class BillsController extends Controller
         $api_key = env('ELASTIC_API');
         $from = env('FROM_API');
 
-        $auth = env('VTAUTH');
+        $auth = $this->auth;
+
+
 
         $request_id = date('YmdHis') . Str::random(4);
 
@@ -211,16 +213,32 @@ class BillsController extends Controller
         $user_pin = $getpin->pin;
 
         if (Hash::check($transfer_pin, $user_pin) == false) {
-            return back()->with('error', 'Invalid Pin');
+            return response()->json([
+                'status' => $this->failedStatus,
+                'message' => "Failed!! Invalid Pin"
+            ],500);
+
         }
 
         if ($amount < 100) {
-            return back()->with('error', 'Amount must not be less than NGN 100');
+            return response()->json([
+
+                'status' => $this->failedStatus,
+                'message' => "Failed!! Amount must not be less than NGN 100"
+
+
+            ],500);
         }
 
         if ($amount > $user_wallet_banlance) {
 
-            return back()->with('error', 'Insufficient Funds, Fund your wallet');
+            return response()->json([
+
+                'status' => $this->failedStatus,
+                'message' => "Failed!! Insufficient Funds, Fund your wallet"
+
+
+            ],500);
 
         }
 
@@ -251,6 +269,7 @@ class BillsController extends Controller
         curl_close($curl);
 
         $var = json_decode($var);
+
 
         $trx_id = $var->requestId;
 
@@ -303,12 +322,83 @@ class BillsController extends Controller
             $body = $res->getBody();
             $array_body = json_decode($body);
 
-            return back()->with('message', 'Airtime Purchase Successfull');
+            return response()->json([
 
-        }return back()->with('error', "Failed!! Please try again later");
+                'status' => $this->successStatus,
+                'message' => 'Airtime Purchase Successful'
+
+
+            ],200);
+
+
+        } return response()->json([
+
+            'status' => $this->failedStatus,
+            'message' => "Failed!! Please try again later"
+
+
+        ],500);
 
     }
 
+
+    public function data_type(){
+
+
+        $client = new \GuzzleHttp\Client();
+        $request = $client->get('https://vtpass.com/api/service-variations?serviceID=mtn-data');
+        $response = $request->getBody();
+        $result = json_decode($response);
+        $get_mtn_network = $result->content->variations;
+
+        $client = new \GuzzleHttp\Client();
+        $request = $client->get('https://vtpass.com/api/service-variations?serviceID=glo-data');
+        $response = $request->getBody();
+        $result = json_decode($response);
+        $get_glo_network = $result->content->variations;
+
+        $client = new \GuzzleHttp\Client();
+        $request = $client->get('https://vtpass.com/api/service-variations?serviceID=airtel-data');
+        $response = $request->getBody();
+        $result = json_decode($response);
+        $get_airtel_network = $result->content->variations;
+
+        $client = new \GuzzleHttp\Client();
+        $request = $client->get('https://vtpass.com/api/service-variations?serviceID=etisalat-data');
+        $response = $request->getBody();
+        $result = json_decode($response);
+        $get_9mobile_network = $result->content->variations;
+
+        $client = new \GuzzleHttp\Client();
+        $request = $client->get('https://vtpass.com/api/service-variations?serviceID=smile-direct');
+        $response = $request->getBody();
+        $result = json_decode($response);
+        $get_smile_network = $result->content->variations;
+
+        $client = new \GuzzleHttp\Client();
+        $request = $client->get('https://vtpass.com/api/service-variations?serviceID=spectranet');
+        $response = $request->getBody();
+        $result = json_decode($response);
+        $get_spectranet_network = $result->content->variations;
+
+
+        return response()->json([
+
+            'status' => $this->successStatus,
+            'mtn_data' => $get_mtn_network,
+            'glo_data' => $get_glo_network,
+            'airtel_data' => $get_airtel_network,
+            '9mobile_data' => $get_9mobile_network,
+            'smile_data' =>  $get_smile_network,
+            'spectranet_data' => $get_spectranet_network,
+
+        ],200);
+
+
+
+
+
+    }
 
 
 
