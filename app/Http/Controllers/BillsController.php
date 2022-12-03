@@ -115,6 +115,7 @@ class BillsController extends Controller
 
         $var = json_decode($var);
 
+        dd($var, $auth);
 
         $trx_id = $var->requestId;
 
