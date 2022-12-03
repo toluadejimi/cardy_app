@@ -692,7 +692,7 @@ class BillsController extends Controller
 
                 ],200);
 
-
+            }
         }
 
     }
