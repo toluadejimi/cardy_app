@@ -32,7 +32,6 @@ class BillsController extends Controller
     public function buy_airtime_for_self(Request $request)
     {
 
-        dd('hello');
         $api_key = env('ELASTIC_API');
         $from = env('FROM_API');
 
@@ -55,16 +54,35 @@ class BillsController extends Controller
         $user_pin = $getpin->pin;
 
         if (Hash::check($transfer_pin, $user_pin) == false) {
-            return back()->with('error', 'Invalid Pin');
+            return response()->json([
+
+                'status' => $this->failedStatus,
+                'message' => "Failed!! Invalid Pin"
+
+
+            ],500);
+
         }
 
         if ($amount < 100) {
-            return back()->with('error', 'Amount must not be less than NGN 100');
+            return response()->json([
+
+                'status' => $this->failedStatus,
+                'message' => "Failed!! Amount must not be less than NGN 100"
+
+
+            ],500);
         }
 
         if ($amount > $user_wallet_banlance) {
 
-            return back()->with('error', 'Insufficient Funds, Fund your wallet');
+            return response()->json([
+
+                'status' => $this->failedStatus,
+                'message' => "Failed!! Insufficient Funds, Fund your wallet"
+
+
+            ],500);
 
         }
 
@@ -147,9 +165,22 @@ class BillsController extends Controller
             $body = $res->getBody();
             $array_body = json_decode($body);
 
-            return back()->with('message', 'Airtime Purchase Successfull');
+            return response()->json([
 
-        }return back()->with('error', "Failed!! Please try again later");
+                'status' => $this->successStatus,
+                'message' => 'Airtime Purchase Successful'
+
+
+            ],200);
+
+
+        } return response()->json([
+
+            'status' => $this->failedStatus,
+            'message' => "Failed!! Please try again later"
+
+
+        ],500);
 
     }
 
