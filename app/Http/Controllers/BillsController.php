@@ -55,11 +55,8 @@ class BillsController extends Controller
 
         if (Hash::check($transfer_pin, $user_pin) == false) {
             return response()->json([
-
                 'status' => $this->failedStatus,
                 'message' => "Failed!! Invalid Pin"
-
-
             ],500);
 
         }
