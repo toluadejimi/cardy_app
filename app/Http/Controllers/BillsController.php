@@ -615,7 +615,7 @@ class BillsController extends Controller
 
                 $update = User::where('id', Auth::id())
                     ->update([
-                        'gotv_number' => $billers_code,
+                        'gotv_number' => $billersCode,
                         'current_gotv_plan' => $plan,
                     ]);
 
