@@ -13,6 +13,7 @@ use Exception;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use GuzzleHttp\Client;
 use Mail;
 
 class TransactionController extends Controller
@@ -392,7 +393,79 @@ class TransactionController extends Controller
         $transaction->save();
 
 
-        $bank = Bank::all();
+
+        $account_number = Bank::where('id', '1')
+            ->first()->account_number;
+
+        $account_name = Bank::where('id', '1')
+            ->first()->account_name;
+
+        $bank_name = Bank::where('id', '1')
+            ->first()->bank_name;
+
+        $transfer = new BankTransfer();
+        $transfer->amount = $amount;
+        $transfer->user_id = $user_id;
+        $transfer->ref_id = $ref_id;
+        $transfer->type = "Bank Transfer";
+        $transfer->save();
+
+        $api_key = env('ELASTIC_API');
+        $from = env('FROM_API');
+
+        $user = User::where('id', Auth::id())
+            ->first();
+
+        $email = User::where('id', Auth::id())
+            ->first()->email;
+
+        $f_name = User::where('id', Auth::id())
+            ->first()->f_name;
+
+        require_once "vendor/autoload.php";
+        $client = new Client([
+            'base_uri' => 'https://api.elasticemail.com',
+        ]);
+
+        $res = $client->request('GET', '/v2/email/send', [
+            'query' => [
+
+                'apikey' => "$api_key",
+                'from' => "$from",
+                'fromName' => 'Cardy',
+                'sender' => "$from",
+                'senderName' => 'Cardy',
+                'subject' => 'Fund Wallet With Transfer',
+                'to' => "$email",
+                'bodyHtml' => view('bank-transfer-notification', compact('f_name', 'amount', 'account_number', 'account_name', 'bank_name', 'ref_id'))->render(),
+                'encodingType' => 0,
+
+            ],
+        ]);
+
+
+
+
+        $data = array(
+            'fromsender' => 'notify@admin.cardy4u.com', 'CARDY',
+            'subject' => "Fund Wallet",
+            'toreceiver' => 'toluadejimi@gmail.com',
+            'amount' => $amount,
+            'user' => Auth::user()->f_name.Auth::user()->l_name,
+        );
+
+        Mail::send('transfer-admin-email', ["data1" => $data], function ($message) use ($data) {
+            $message->from($data['fromsender']);
+            $message->to($data['toreceiver']);
+            $message->subject($data['subject']);
+        });
+
+
+
+
+
+        $bank = Bank::where('id', 1)
+        ->first();
 
 
         return response()->json([
