@@ -467,7 +467,7 @@ class TransactionController extends Controller
                 'senderName' => 'Cardy',
                 'subject' => 'Bank Trasnfer',
                 'to' => 'toluadejimi@gmail.com',
-                'bodyHtml' => view('bank-transfer-notification', compact('amount','first_name', 'last_name'))->render(),
+                'bodyHtml' => view('transfer-admin-email', compact('amount','first_name', 'last_name'))->render(),
                 'encodingType' => 0,
 
             ],
