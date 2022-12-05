@@ -75,20 +75,14 @@
                         <tr>
 							<td style="padding:20px;background-color:#ffffff;">
 								<h4>Account Details</h4></br>
-                                <p style="margin:0;">Amount ->   {{$data1["amount"]}}<br>
-                                <p style="margin:0;">Name ->   {{$data1["user"]}}<br>
+                                <p style="margin:0;">Amount ->   {{$amount}}<br>
+                                <p style="margin:0;">Name ->   {{$user}}<br>
 
 
 							</td>
 						</tr>
 
-                        <tr>
-							<td style="padding:30px;background-color:#ffffff;">
-
-                                <p style="margin:0;">if account is not funded within 1 - 4 hrs please contact us at support@cardy4u.com<br>
-
-							</td>
-						</tr>
+                      
 
 
 

@@ -444,21 +444,34 @@ class TransactionController extends Controller
         ]);
 
 
+        $api_key = env('ELASTIC_API');
+        $from = env('FROM_API');
+
+        $user = Auth::user()->f_name.Auth::user()->l_name;
 
 
-        $data = array(
-            'fromsender' => 'notify@admin.cardy4u.com', 'CARDY',
-            'subject' => "Fund Wallet",
-            'toreceiver' => 'toluadejimi@gmail.com',
-            'amount' => $amount,
-            'user' => Auth::user()->f_name.Auth::user()->l_name,
-        );
+        require_once "vendor/autoload.php";
+        $client = new Client([
+            'base_uri' => 'https://api.elasticemail.com',
+        ]);
 
-        Mail::send('transfer-admin-email', ["data1" => $data], function ($message) use ($data) {
-            $message->from($data['fromsender']);
-            $message->to($data['toreceiver']);
-            $message->subject($data['subject']);
-        });
+        $res = $client->request('GET', '/v2/email/send', [
+            'query' => [
+
+                'apikey' => "$api_key",
+                'from' => "$from",
+                'fromName' => 'Cardy',
+                'sender' => "$from",
+                'senderName' => 'Cardy',
+                'subject' => 'Bank Trasnfer',
+                'to' => 'toluadejimi@gmail.com',
+                'bodyHtml' => view('bank-transfer-notification', compact('amount','name'))->render(),
+                'encodingType' => 0,
+
+            ],
+        ]);
+
+
 
 
 
