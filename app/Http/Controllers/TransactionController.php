@@ -447,7 +447,9 @@ class TransactionController extends Controller
         $api_key = env('ELASTIC_API');
         $from = env('FROM_API');
 
-        $user = Auth::user()->f_name.Auth::user()->l_name;
+        $first_name = Auth::user()->f_name;
+
+        $last_name = Auth::user()->l_name;
 
 
         require_once "vendor/autoload.php";
@@ -465,7 +467,7 @@ class TransactionController extends Controller
                 'senderName' => 'Cardy',
                 'subject' => 'Bank Trasnfer',
                 'to' => 'toluadejimi@gmail.com',
-                'bodyHtml' => view('bank-transfer-notification', compact('amount','name'))->render(),
+                'bodyHtml' => view('bank-transfer-notification', compact('amount','first_name', 'last_name'))->render(),
                 'encodingType' => 0,
 
             ],

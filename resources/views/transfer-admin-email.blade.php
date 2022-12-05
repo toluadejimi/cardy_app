@@ -76,13 +76,13 @@
 							<td style="padding:20px;background-color:#ffffff;">
 								<h4>Account Details</h4></br>
                                 <p style="margin:0;">Amount ->   {{$amount}}<br>
-                                <p style="margin:0;">Name ->   {{$user}}<br>
+                                <p style="margin:0;">Name ->   {{$first_name}} {{$last_name}}<br>
 
 
 							</td>
 						</tr>
 
-                      
+
 
 
 
