@@ -30,9 +30,10 @@ class AuthCoontroller extends Controller
             //Login to account
 
             $credentials = request(['phone', 'password']);
-
-            Passport::tokensExpireIn(Carbon::now()->addDays(3));
-            Passport::refreshTokensExpireIn(Carbon::now()->addDays(3));
+            // Passport::tokensExpireIn(Carbon::now()->addDays(3));
+            Passport::tokensExpireIn(Carbon::now()->addMinutes(15));
+            // Passport::refreshTokensExpireIn(Carbon::now()->addDays(3));
+            Passport::refreshTokensExpireIn(Carbon::now()->addMinutes(15));
 
             if (!auth()->attempt($credentials)) {
                 return response()->json([
@@ -548,6 +549,13 @@ class AuthCoontroller extends Controller
             ], 500);
 
         }
+
+        return response()->json([
+
+            'status' => $this->successStatus,
+            'message' => 'Pin Valid',
+
+        ], 200);
 
     }
 
