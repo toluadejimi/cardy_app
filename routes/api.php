@@ -94,6 +94,9 @@ Route::post('buy-token', [BillsController::class, 'buy_token']);
 Route::get('token-company', [BillsController::class, 'get_token_company']);
 
 
+Route::post('pin-verify', [AuthCoontroller::class, 'pin_verify']);
+
+
 
 
 
