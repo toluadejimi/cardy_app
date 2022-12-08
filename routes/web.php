@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthCoontroller;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ManageController;
@@ -16,7 +17,7 @@ use App\Http\Controllers\ManageController;
 //Clear Cache facade value:
 Route::get('/clear-cache', function() {
 
-  
+
     $exitCode = Artisan::call('cache:clear');
     return '<h1>Cache facade value cleared</h1>';
 });
@@ -57,8 +58,17 @@ Route::get('/', function () {
 Route::get('signin', [MainController::class,'signin']);
 
 
-Route::get('update-password', [MainController::class,'update_password']);
-Route::post('updatepassword', [MainController::class,'updatepassword']);
+Route::get('update-password', [AuthCoontroller::class,'update_password']);
+Route::post('updatepassword', [AuthCoontroller::class,'updatepassword']);
+
+
+Route::get('forgot-password', [AuthCoontroller::class,'forgot_password']);
+Route::post('forgot-password-now', [AuthCoontroller::class,'forgot_password_now']);
+
+
+Route::get('forgot-pin', [MainController::class,'forgot_pin']);
+Route::post('forgot-pin-now', [MainController::class,'forgot_pin_now']);
+
 
 
 

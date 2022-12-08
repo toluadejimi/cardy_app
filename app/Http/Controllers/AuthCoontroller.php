@@ -559,4 +559,59 @@ class AuthCoontroller extends Controller
 
     }
 
+
+    public function forgot_pin(Request $request)
+    {
+
+        $email = $request->email;
+
+        return view('forgotpin', compact('email'));
+
+    }
+
+    public function forgot_pin_now(Request $request)
+    {
+
+        $email = $request->email;
+
+        $input = $request->validate([
+            'password' => ['required', 'confirmed', 'string', 'min:1', 'max:4'],
+        ]);
+
+        $update = User::where('email', $email)
+            ->update([
+                'pin' => Hash::make($request->password),
+            ]);
+
+        return view('pin-success');
+
+    }
+
+    public function forgot_password(Request $request)
+    {
+
+        $email = $request->email;
+
+        return view('forgotemail', compact('email'));
+
+    }
+
+    public function forgot_password_now(Request $request)
+    {
+
+        $email = $request->email;
+
+        $input = $request->validate([
+            'password' => ['required', 'confirmed', 'string'],
+        ]);
+
+        $update = User::where('email', $email)
+            ->update([
+                'password' => Hash::make($request->password),
+            ]);
+
+        return view('success');
+
+    }
+
 }
