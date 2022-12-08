@@ -35,21 +35,8 @@ class BillsController extends Controller
 
         $phone = Auth::user()->phone;
 
-        $transfer_pin = $request->pin;
-
         $user_wallet_banlance = EMoney::where('user_id', Auth::user()->id)
             ->first()->current_balance;
-
-        $getpin = Auth()->user();
-        $user_pin = $getpin->pin;
-
-        if (Hash::check($transfer_pin, $user_pin) == false) {
-            return response()->json([
-                'status' => $this->failedStatus,
-                'message' => "Failed!! Invalid Pin",
-            ], 500);
-
-        }
 
         if ($amount < 100) {
             return response()->json([
@@ -182,21 +169,10 @@ class BillsController extends Controller
 
         $phone = $request->phone;
 
-        $transfer_pin = $request->pin;
 
         $user_wallet_banlance = EMoney::where('user_id', Auth::user()->id)
             ->first()->current_balance;
 
-        $getpin = Auth()->user();
-        $user_pin = $getpin->pin;
-
-        if (Hash::check($transfer_pin, $user_pin) == false) {
-            return response()->json([
-                'status' => $this->failedStatus,
-                'message' => "Failed!! Invalid Pin",
-            ], 500);
-
-        }
 
         if ($amount < 100) {
             return response()->json([
@@ -388,21 +364,11 @@ class BillsController extends Controller
 
         $amount = $request->amount;
 
-        $transfer_pin = $request->pin;
 
         $user_wallet_banlance = EMoney::where('user_id', Auth::user()->id)
             ->first()->current_balance;
 
-        $getpin = Auth()->user();
-        $user_pin = $getpin->pin;
-
-        if (Hash::check($transfer_pin, $user_pin) == false) {
-            return response()->json([
-                'status' => $this->failedStatus,
-                'message' => "Failed!! Invalid Pin",
-            ], 500);
-
-        }
+      
 
         if ($amount < 100) {
             return response()->json([
