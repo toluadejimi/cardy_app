@@ -66,8 +66,8 @@ Route::get('forgot-password', [AuthCoontroller::class,'forgot_password']);
 Route::post('forgot-password-now', [AuthCoontroller::class,'forgot_password_now']);
 
 
-Route::get('forgot-pin', [MainController::class,'forgot_pin']);
-Route::post('forgot-pin-now', [MainController::class,'forgot_pin_now']);
+Route::get('forgot-pin', [AuthCoontroller::class,'forgot_pin']);
+Route::post('forgot-pin-now', [AuthCoontroller::class,'forgot_pin_now']);
 
 
 
